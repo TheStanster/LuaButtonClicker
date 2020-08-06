@@ -20,7 +20,7 @@ end
 
 function love.update(dt)
   if math.ceil(time) > 0 then
-    time = time - (1/60)
+    time = time - dt
   end
 end
 
