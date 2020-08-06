@@ -19,8 +19,11 @@ function love.load()
 end
 
 function love.update(dt)
-  if math.ceil(time) > 0 then
+  if time > 0 then
     time = time - dt
+  end
+  if time < 0 then
+    time = 0
   end
 end
 
@@ -33,7 +36,7 @@ function love.draw()
   love.graphics.print(score)
   love.graphics.print("Time elapsed: " , 100, 0)
   love.graphics.print(math.ceil(time) , 250, 0)
-  if math.ceil(time) == 0 then
+  if time == 0 then
     love.graphics.clear()
     timeUp()
   end
