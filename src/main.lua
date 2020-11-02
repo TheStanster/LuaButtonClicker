@@ -6,11 +6,12 @@ function love.load()
 
 
   missed = 0
+  hits = 0
   score = 0
   accuracy = 0
   gameState = 1
 
-  timeLimit = 5
+  timeLimit = 25
   time = timeLimit
   myFont = love.graphics.newFont(20)
 
@@ -42,7 +43,7 @@ function love.draw()
   love.graphics.setFont(myFont)
   love.graphics.setColor(1, 1, 1)
   love.graphics.print("Score: " .. score, 5, 5)
-  love.graphics.print("Time left: " .. math.ceil(time), 100, 5)
+  love.graphics.print("Time left: " .. math.ceil(time), 120, 5)
   
 
 
@@ -72,7 +73,15 @@ function love.mousepressed(x, y, butt, isTouch)
       score = score + 1
       buttonRefreshScored()
     else
-      missed = missed + 1
+      buttonRefreshMissed()
+    end
+  elseif butt == 2 and gameState == 2 then
+    if d <= button.radius then
+      time = time - 1
+      score = score + 2
+      buttonRefreshScored()
+    else
+      time = time - 1
       buttonRefreshMissed()
     end
   elseif (gameState == 1 or gameState == 3) and butt == 1 then 
@@ -87,7 +96,7 @@ function buttonRefreshScored()
   pointY = windowY - button.radius
   button.x = love.math.random(button.radius, pointX)
   button.y = love.math.random(button.radius + 10, pointY)
-
+  hits = hits + 1
 end
 
 function buttonRefreshMissed()
@@ -95,6 +104,10 @@ function buttonRefreshMissed()
   pointY = windowY - button.radius
   button.x = love.math.random(button.radius, pointX)
   button.y = love.math.random(button.radius + 10, pointY)
+  missed = missed + 1
+  if score > 0 then 
+    score = score -1
+  end
 
 end
 
@@ -104,6 +117,7 @@ end
 
 function newGame()
   missed = 0
+  hits = 0
   score = 0
   accuracy = 0
   time = timeLimit
@@ -112,8 +126,8 @@ function newGame()
 end
 
 function timeUp()
-  if score > 0 then
-    accuracy = (score / (score + missed))*100
+  if hits > 0 then
+    accuracy = (hits / (hits + missed))*100
   end
   px1 = ((windowX)/2)-250
   px2 = ((windowX)/2)+50
@@ -122,6 +136,6 @@ function timeUp()
   love.graphics.print("Time's up! Your score is: ", px1, py1)
   love.graphics.print(score , px2, py2)
   love.graphics.print("Your accuracy was: ", px1, py1 + 20)
-  love.graphics.print(accuracy .. "%", px2, py2 + 20)
+  love.graphics.print(math.ceil(accuracy) .. "%", px2, py2 + 20)
   
 end
