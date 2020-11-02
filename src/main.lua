@@ -16,6 +16,14 @@ function love.load()
 
   windowX = love.graphics.getWidth()
   windowY = love.graphics.getHeight()
+
+  --Load sprites
+  sprites = {}
+  sprites.sky = love.graphics.newImage('sprites/sky.png')
+  sprites.target = love.graphics.newImage('sprites/target.png')
+  sprites.crosshairs = love.graphics.newImage('sprites/crosshairs.png')
+    love.mouse.setVisible(false)
+
 end
 
 function love.update(dt)
@@ -28,6 +36,7 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.draw(sprites.sky)
   love.graphics.setColor(button.r, button.g, 0)
   love.graphics.circle("fill", button.x, button.y, button.size)
 
@@ -36,6 +45,11 @@ function love.draw()
   love.graphics.print(score)
   love.graphics.print("Time elapsed: " , 100, 0)
   love.graphics.print(math.ceil(time) , 250, 0)
+
+  --Draw sprites
+  love.graphics.draw(sprites.target, button.x-50, button.y-50)
+  love.graphics.draw(sprites.crosshairs, love.mouse.getX()-40, love.mouse.getY()-40)
+
   if time == 0 then
     love.graphics.clear()
     timeUp()
@@ -91,6 +105,7 @@ function timeUp()
   love.graphics.print("Your accuracy was: ", px1, py1 + 20)
   love.graphics.print(accuracy , px2, py2 + 20)
   love.graphics.print("%" , px2 + 40, py2 + 20)
+  love.mouse.setVisible(true)
   function love.mousepressed(x, y, butt, isTouch)
     if butt == 1 then
       love.window.close()
