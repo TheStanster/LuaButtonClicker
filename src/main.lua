@@ -2,13 +2,13 @@ function love.load()
   button = {}
   button.x = 200
   button.y = 200
-  button.size = 50
-  button.r = 1
-  button.g = 0
+  button.radius = 50
+
 
   missed = 0
   score = 0
   accuracy = 0
+  gameState = 1
 
   timeLimit = 5
   time = timeLimit
@@ -27,69 +27,88 @@ function love.load()
 end
 
 function love.update(dt)
-  if time > 0 then
+  if time > 0 and gameState == 2 then
     time = time - dt
   end
   if time < 0 then
     time = 0
+    gameState = 3
   end
 end
 
 function love.draw()
-  love.graphics.draw(sprites.sky)
-  love.graphics.setColor(button.r, button.g, 0)
-  love.graphics.circle("fill", button.x, button.y, button.size)
+  love.graphics.draw(sprites.sky, 0, 0)
 
   love.graphics.setFont(myFont)
   love.graphics.setColor(1, 1, 1)
-  love.graphics.print(score)
-  love.graphics.print("Time elapsed: " , 100, 0)
-  love.graphics.print(math.ceil(time) , 250, 0)
+  love.graphics.print("Score: " .. score, 5, 5)
+  love.graphics.print("Time left: " .. math.ceil(time), 100, 5)
+  
 
-  --Draw sprites
-  love.graphics.draw(sprites.target, button.x-50, button.y-50)
-  love.graphics.draw(sprites.crosshairs, love.mouse.getX()-40, love.mouse.getY()-40)
 
-  if time == 0 then
-    love.graphics.clear()
+  if gameState == 1 then
+    love.graphics.printf("Click anywhere to start a game...", 0, love.graphics.getHeight()/2, love.graphics.getWidth(), "center")
+    love.mouse.setVisible(true)
+  end
+
+  if gameState == 2 then
+    love.mouse.setVisible(false)
+    love.graphics.draw(sprites.target, button.x-button.radius, button.y-button.radius)
+    love.graphics.draw(sprites.crosshairs, love.mouse.getX()-20, love.mouse.getY()-20)
+  end
+
+  if gameState == 3 then
+    love.mouse.setVisible(true) 
     timeUp()
   end
+  
+
 end
 
 function love.mousepressed(x, y, butt, isTouch)
-  -- d = ((y - button.y)^2+(x - button.x)^2)^0.5
   d = distanceBetween(button.x, button.y, love.mouse.getX(), love.mouse.getY())
-  if butt == 1 then
-    if d <= button.size then
+  if butt == 1 and gameState == 2 then
+    if d <= button.radius then
       score = score + 1
       buttonRefreshScored()
     else
       missed = missed + 1
       buttonRefreshMissed()
     end
+  elseif (gameState == 1 or gameState == 3) and butt == 1 then 
+    newGame()
+  elseif gameState == 3 and butt == 2 then 
+    love.window.close()
   end
 end
 
 function buttonRefreshScored()
-  pointX = windowX - button.size
-  pointY = windowY - button.size
-  button.x = love.math.random(button.size, pointX)
-  button.y = love.math.random(button.size + 10, pointY)
-  button.r = 0
-  button.g = 1
+  pointX = windowX - button.radius
+  pointY = windowY - button.radius
+  button.x = love.math.random(button.radius, pointX)
+  button.y = love.math.random(button.radius + 10, pointY)
+
 end
 
 function buttonRefreshMissed()
-  pointX = windowX - button.size
-  pointY = windowY - button.size
-  button.x = love.math.random(button.size, pointX)
-  button.y = love.math.random(button.size + 10, pointY)
-  button.r = 1
-  button.g = 0
+  pointX = windowX - button.radius
+  pointY = windowY - button.radius
+  button.x = love.math.random(button.radius, pointX)
+  button.y = love.math.random(button.radius + 10, pointY)
+
 end
 
 function distanceBetween(x1, y1, x2, y2)
   return ((y2 - y1)^2+(x2 - x1)^2)^0.5
+end
+
+function newGame()
+  missed = 0
+  score = 0
+  accuracy = 0
+  time = timeLimit
+
+  gameState = 2
 end
 
 function timeUp()
@@ -103,12 +122,6 @@ function timeUp()
   love.graphics.print("Time's up! Your score is: ", px1, py1)
   love.graphics.print(score , px2, py2)
   love.graphics.print("Your accuracy was: ", px1, py1 + 20)
-  love.graphics.print(accuracy , px2, py2 + 20)
-  love.graphics.print("%" , px2 + 40, py2 + 20)
-  love.mouse.setVisible(true)
-  function love.mousepressed(x, y, butt, isTouch)
-    if butt == 1 then
-      love.window.close()
-    end
-  end
+  love.graphics.print(accuracy .. "%", px2, py2 + 20)
+  
 end
