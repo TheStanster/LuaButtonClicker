@@ -1,5 +1,4 @@
 function love.load()
--- Attributes of the button to be clicked
   button = {}
   button.x = 200
   button.y = 200
@@ -7,19 +6,12 @@ function love.load()
   button.r = 1
   button.g = 0
 
--- Variables that track interaction with the button
   missed = 0
   score = 0
   accuracy = 0
 
--- Variables that store Game Settings
-  gameState = 0 -- 0 for menu, 1 for ongoing session, 2 for result screen
   timeLimit = 5
   time = timeLimit
-
-  option = false
-
-  -- Setttings
   myFont = love.graphics.newFont(20)
 
   windowX = love.graphics.getWidth()
@@ -97,36 +89,11 @@ function timeUp()
   love.graphics.print("Time's up! Your score is: ", px1, py1)
   love.graphics.print(score , px2, py2)
   love.graphics.print("Your accuracy was: ", px1, py1 + 20)
-  love.graphics.print(math.ceil(accuracy) , px2, py2 + 20)
+  love.graphics.print(accuracy , px2, py2 + 20)
   love.graphics.print("%" , px2 + 40, py2 + 20)
-
-  --[[option = getReply
-  if option == true then
-    love.window.close()
-  end]]--
   function love.mousepressed(x, y, butt, isTouch)
     if butt == 1 then
       love.window.close()
     end
   end
-
-end
-
-function getReply()
-  function love.mousepressed(x, y, butt, isTouch)
-    if butt == 1 then
-      return true
-    elseif butt == 2 then
-      return false
-    end
-  end
-end
-
-function showMenu()
-  love.graphics.print("Welcome to LuaButtonClicker by Stan Valster!", px1, py1)
-  --love.graphics.print(score , px2, py2)
-  love.graphics.print("Left-click to start a new game", px1, py1 + 20)
-  --love.graphics.print("" , px2, py2 + 20)
-
-
 end
